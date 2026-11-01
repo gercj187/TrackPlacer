@@ -1,0 +1,17 @@
+﻿{
+    "Id":  "TrackPlacer",
+    "DisplayName":  "Track Placer Editor",
+    "Author":  "CJ187",
+    "Version":  "0.00.36",
+    "ManagerVersion":  "0.27.3",
+    "AssemblyName":  "TrackPlacer.dll",
+    "EntryMethod":  "TrackPlacer.Main.Load",
+	"HomePage": "https://www.nexusmods.com/derailvalley/mods/1811",
+	"Repository": "https://raw.githubusercontent.com/gercj187/CareerRework/refs/heads/main/Singleplayer/repository.json",
+    "Requirements":  [
+                         "CommsRadioAPI"
+                     ],
+    "LoadAfter":  [
+                      "CommsRadioAPI"
+                  ]
+}
