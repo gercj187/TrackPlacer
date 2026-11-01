@@ -5,5 +5,7 @@
     "Version":  "0.00.43",
     "ManagerVersion":  "0.27.3",
     "AssemblyName":  "TrackPlacerPlay.dll",
-    "EntryMethod":  "TrackPlacer.Main.Load"
+    "EntryMethod":  "TrackPlacer.Main.Load",
+	"HomePage": "https://www.nexusmods.com/derailvalley/mods/1811",
+	"Repository": "https://github.com/gercj187/TrackPlacerPlay/blob/main/repository.json"
 }
