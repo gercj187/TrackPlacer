@@ -1,0 +1,9 @@
+﻿{
+    "Id":  "TrackPlacerPlay",
+    "DisplayName":  "Track Placer Play",
+    "Author":  "CJ187",
+    "Version":  "0.00.43",
+    "ManagerVersion":  "0.27.3",
+    "AssemblyName":  "TrackPlacerPlay.dll",
+    "EntryMethod":  "TrackPlacer.Main.Load"
+}
