@@ -1,0 +1,80 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>TrackPlacer</AssemblyName>
+		<RootNamespace>TrackPlacer</RootNamespace>
+		<TargetFramework>net48</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+
+		<!-- Pfad zur Derail-Valley-Installation. Bei Bedarf anpassen oder per
+		     dotnet build -p:DvInstallDir="D:\Steam\steamapps\common\Derail Valley" überschreiben. -->
+		<DvInstallDir Condition="'$(DvInstallDir)' == ''">S:\SteamLibrary\steamapps\common\Derail Valley</DvInstallDir>
+		<DvManaged>$(DvInstallDir)\DerailValley_Data\Managed</DvManaged>
+
+		<!-- CommsRadioAPI liegt je nach Mod-Manager in Mods oder Mods.inactive -->
+		<CommsRadioDir>$(DvInstallDir)\Mods\CommsRadioAPI</CommsRadioDir>
+		<CommsRadioDir Condition="!Exists('$(CommsRadioDir)\CommsRadioAPI.dll')">$(DvInstallDir)\Mods.inactive\CommsRadioAPI</CommsRadioDir>
+
+		<!-- UnityModManager.dll liegt meist unter Managed\UnityModManager, manchmal direkt in Managed -->
+		<UmmDll>$(DvManaged)\UnityModManager\UnityModManager.dll</UmmDll>
+		<UmmDll Condition="!Exists('$(UmmDll)')">$(DvManaged)\UnityModManager.dll</UmmDll>
+		<HarmonyDll>$(DvManaged)\UnityModManager\0Harmony.dll</HarmonyDll>
+		<HarmonyDll Condition="!Exists('$(HarmonyDll)')">$(DvManaged)\0Harmony.dll</HarmonyDll>
+	</PropertyGroup>
+
+	<Target Name="CheckDvPaths" BeforeTargets="ResolveAssemblyReferences">
+		<Error Condition="!Exists('$(DvManaged)\Assembly-CSharp.dll')" Text="Assembly-CSharp.dll nicht gefunden unter $(DvManaged). DvInstallDir in TrackPlacer.csproj prüfen." />
+		<Error Condition="!Exists('$(UmmDll)')" Text="UnityModManager.dll nicht gefunden (gesucht: $(UmmDll))." />
+		<Error Condition="!Exists('$(CommsRadioDir)\CommsRadioAPI.dll')" Text="CommsRadioAPI.dll weder in Mods noch in Mods.inactive gefunden." />
+	</Target>
+
+	<ItemGroup>
+		<!-- Damit net48 auch ohne installiertes Targeting Pack baut -->
+		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="System.IO.Compression" />
+		<Reference Include="System.IO.Compression.FileSystem" />
+		<Reference Include="Assembly-CSharp"><HintPath>$(DvManaged)\Assembly-CSharp.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="Newtonsoft.Json"><HintPath>$(DvManaged)\Newtonsoft.Json.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="DV.RailTrack"><HintPath>$(DvManaged)\DV.RailTrack.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="DV.PointSet"><HintPath>$(DvManaged)\DV.PointSet.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="DV.MeshX"><HintPath>$(DvManaged)\DV.MeshX.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="DV.ThingTypes"><HintPath>$(DvManaged)\DV.ThingTypes.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="DV.Utils"><HintPath>$(DvManaged)\DV.Utils.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="BezierCurves"><HintPath>$(DvManaged)\BezierCurves.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="net.smkd.vector3d"><HintPath>$(DvManaged)\net.smkd.vector3d.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="DV.Interaction"><HintPath>$(DvManaged)\DV.Interaction.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="WorldStreamer"><HintPath>$(DvManaged)\WorldStreamer.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="DV.OriginShiftInfo"><HintPath>$(DvManaged)\DV.OriginShiftInfo.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="UnityEngine"><HintPath>$(DvManaged)\UnityEngine.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="UnityEngine.CoreModule"><HintPath>$(DvManaged)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="UnityEngine.PhysicsModule"><HintPath>$(DvManaged)\UnityEngine.PhysicsModule.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="UnityEngine.AnimationModule"><HintPath>$(DvManaged)\UnityEngine.AnimationModule.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="UnityEngine.InputLegacyModule"><HintPath>$(DvManaged)\UnityEngine.InputLegacyModule.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="UnityEngine.ImageConversionModule"><HintPath>$(DvManaged)\UnityEngine.ImageConversionModule.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="UnityEngine.IMGUIModule"><HintPath>$(DvManaged)\UnityEngine.IMGUIModule.dll</HintPath><Private>false</Private></Reference>
+		<Reference Include="0Harmony"><HintPath>$(HarmonyDll)</HintPath><Private>false</Private></Reference>
+		<Reference Include="UnityModManager"><HintPath>$(UmmDll)</HintPath><Private>false</Private></Reference>
+		<Reference Include="CommsRadioAPI"><HintPath>$(CommsRadioDir)\CommsRadioAPI.dll</HintPath><Private>false</Private></Reference>
+	</ItemGroup>
+
+	<!-- Nach dem Build: DLL nach ..\build (für package.ps1) und direkt in den Mods-Ordner -->
+	<ItemGroup>
+		<!-- Menü-Bilder fürs Funkgerät, in die DLL eingebettet (eigene PNGs in Mods\TrackPlacer\icons überschreiben sie) -->
+		<EmbeddedResource Include="Icons\*.png" LogicalName="TrackPlacer.Icons.%(Filename).png" />
+		<EmbeddedResource Include="Textures\*.png" LogicalName="TrackPlacer.Textures.%(Filename).png" />
+		<EmbeddedResource Include="Models\*.obj" LogicalName="TrackPlacer.Models.%(Filename).obj" />
+		<EmbeddedResource Include="Textures\*.jpg" LogicalName="TrackPlacer.Textures.%(Filename).jpg" />
+	</ItemGroup>
+
+	<Target Name="CopyToMods" AfterTargets="Build" Condition="'$(SkipDeploy)' != 'true'">
+		<MakeDir Directories="..\build" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="..\build" />
+		<MakeDir Directories="$(DvInstallDir)\Mods\TrackPlacer" />
+		<Copy SourceFiles="$(TargetPath);..\info.json" DestinationFolder="$(DvInstallDir)\Mods\TrackPlacer" ContinueOnError="true" />
+	</Target>
+</Project>
